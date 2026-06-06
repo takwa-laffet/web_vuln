@@ -4,9 +4,16 @@ import sqlite3
 import logging
 from datetime import datetime
 import hashlib
+import urllib.request
+import json as json_module
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'
+
+# Create required directories
+os.makedirs('logs', exist_ok=True)
+os.makedirs('uploads', exist_ok=True)
+os.makedirs('files', exist_ok=True)
 
 # Setup logging
 logging.basicConfig(
@@ -204,10 +211,10 @@ def api_fetch():
     url = request.args.get('url', '')
     log_action('API', 'FETCH', f"url={url}")
     # VULNERABLE: SSRF
-    import requests
     try:
-        resp = requests.get(url, timeout=5)
-        return jsonify({'status': 'success', 'content': resp.text[:500]})
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            content = resp.read().decode('utf-8')[:500]
+            return jsonify({'status': 'success', 'content': content})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
