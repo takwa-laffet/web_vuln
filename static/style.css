@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.navbar {
+    background: #16213e;
+    padding: 15px 0;
+    border-bottom: 2px solid #0f3460;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h1 {
+    color: #e94565;
+}
+
+.navbar a {
+    color: #ddd;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.navbar a:hover {
+    color: #e94565;
+}
+
+h2 {
+    color: #e94565;
+    margin-bottom: 20px;
+}
+
+.warning {
+    background: #ff6b6b;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.alert.error {
+    background: #ff6b6b;
+}
+
+.alert.success {
+    background: #4ecdc4;
+}
+
+.form-box {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.form-group {
+    margin: 15px 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #0f3460;
+    color: white;
+}
+
+.btn {
+    background: #e94565;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
+}
+
+.btn:hover {
+    background: #ff6b6b;
+}
+
+.btn.danger {
+    background: #ff6b6b;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #333;
+}
+
+table th {
+    background: #0f3460;
+}
+
+.services ul {
+    list-style: none;
+    padding: 0;
+}
+
+.services li {
+    margin: 10px 0;
+    padding: 10px;
+    background: #16213e;
+    border-radius: 5px;
+}
+
+.services a {
+    color: #4ecdc4;
+}

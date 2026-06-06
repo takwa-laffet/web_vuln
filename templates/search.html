@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search - VulnApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🔍 Search Users</h2>
+        
+        <form method="GET" action="/search" class="form-box">
+            <div class="form-group">
+                <label>Search:</label>
+                <input type="text" name="q" value="{{ query }}" placeholder="Enter username...">
+            </div>
+            <button type="submit" class="btn">Search</button>
+        </form>
+        
+        {% if results %}
+        <div class="results">
+            <h3>Results:</h3>
+            <table>
+                <tr><th>ID</th><th>Username</th><th>Role</th></tr>
+                {% for r in results %}
+                <tr><td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[3] }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+        
+        <p class="warning">⚠️ Test payloads: ' OR 1=1 -- , <script>alert(1)</script></p>
+        <p><a href="/dashboard">Dashboard</a> | <a href="/">Back</a></p>
+    </div>
+</body>
+</html>

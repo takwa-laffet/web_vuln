@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - VulnApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ username }}!</h2>
+        
+        <div class="menu">
+            <a href="/upload" class="btn">📤 File Upload</a>
+            <a href="/search" class="btn">🔍 Search Users</a>
+            <a href="/admin" class="btn">🧑‍💻 Admin Panel</a>
+            <a href="/api/logs" class="btn">📡 View API Logs</a>
+            <a href="/logout" class="btn danger">Logout</a>
+        </div>
+        
+        <p><a href="/">Back to Home</a></p>
+    </div>
+</body>
+</html>

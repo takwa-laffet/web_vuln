@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VulnApp - Fake Company Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1><a href="/">VulnApp</a></h1>
+            <div class="nav-links">
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+                <a href="/upload">Upload</a>
+                <a href="/search">Search</a>
+                <a href="/admin">Admin</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h2>Welcome to VulnApp</h2>
+        <p class="warning">⚠️ This is a deliberately vulnerable application for security testing!</p>
+        
+        <div class="services">
+            <h3>Available Services:</h3>
+            <ul>
+                <li><a href="/login">🔐 Login Service</a> - Test brute force & SQL Injection</li>
+                <li><a href="/upload">📤 File Upload</a> - Test malicious file upload</li>
+                <li><a href="/search">🔍 Search</a> - Test SQL Injection & XSS</li>
+                <li><a href="/files/readme.txt">📂 File Access</a> - Test Path Traversal</li>
+                <li><a href="/admin">🧑‍💻 Admin Panel</a> - Test unauthorized access</li>
+                <li><a href="/api/users">📡 API Service</a> - Test API abuse & SSRF</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

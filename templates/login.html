@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - VulnApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🔐 Login</h2>
+        {% if error %}
+        <div class="alert error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" action="/login" class="form-box">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        
+        <p>Test credentials: admin/admin123, user/password, test/test123</p>
+        <p><a href="/register">Register new account</a> | <a href="/">Back</a></p>
+    </div>
+</body>
+</html>
