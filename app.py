@@ -24,8 +24,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Initialize database
+def get_db():
+    conn = sqlite3.connect('users.db', timeout=10.0)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 def init_db():
-    conn = sqlite3.connect('users.db')
+    conn = get_db()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY,
@@ -50,13 +55,7 @@ def init_db():
 init_db()
 
 def log_action(user, action, details=""):
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO logs VALUES (NULL, ?, ?, ?, ?, ?)",
-            (datetime.now().isoformat(), user, action, request.remote_addr, details))
-    conn.commit()
-    conn.close()
-    logger.info(f"{user} - {action} - {details}")
+    logger.info(f"{request.remote_addr} - {user} - {action} - {details}")
 
 @app.route('/')
 def index():
@@ -71,7 +70,7 @@ def login():
         password = request.form.get('password', '')
         log_action(username, 'LOGIN_ATTEMPT', f"username={username}")
         
-        conn = sqlite3.connect('users.db')
+        conn = get_db()
         c = conn.cursor()
         # VULNERABLE: SQL Injection
         query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
@@ -82,20 +81,23 @@ def login():
                 session['loggedin'] = True
                 session['username'] = user[1]
                 session['role'] = user[3]
+                conn.close()
                 log_action(username, 'LOGIN_SUCCESS')
                 return redirect(url_for('dashboard'))
             else:
+                conn.close()
                 error = 'Invalid credentials'
                 log_action(username, 'LOGIN_FAILED', 'Invalid credentials')
         except Exception as e:
+            conn.close()
             error = 'Database error'
             log_action(username, 'LOGIN_ERROR', str(e))
-        conn.close()
     return render_template('login.html', error=error)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     error = None
+    conn = None
     if request.method == 'POST':
         username = request.form.get('username', '')
         password = request.form.get('password', '')
@@ -103,7 +105,7 @@ def register():
         if not username or not password:
             error = 'All fields required'
         else:
-            conn = sqlite3.connect('users.db')
+            conn = get_db()
             c = conn.cursor()
             c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
             conn.commit()
@@ -143,10 +145,11 @@ def search():
     
     query = request.args.get('q', '')
     results = []
+    conn = None
     if query:
         log_action(session.get('username'), 'SEARCH', f"query={query}")
         # VULNERABLE: SQL Injection in search
-        conn = sqlite3.connect('users.db')
+        conn = get_db()
         c = conn.cursor()
         try:
             sql = f"SELECT * FROM users WHERE username LIKE '%{query}%'"
@@ -154,7 +157,9 @@ def search():
             results = c.fetchall()
         except:
             pass
-        conn.close()
+        finally:
+            if conn:
+                conn.close()
     return render_template('search.html', query=query, results=results)
 
 # 4. File Access Service (VULNERABLE)
@@ -178,13 +183,17 @@ def admin():
         log_action(session.get('username'), 'UNAUTHORIZED_ADMIN_ACCESS')
         return "Unauthorized", 403
     
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM users")
-    users = c.fetchall()
-    c.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 50")
-    logs = c.fetchall()
-    conn.close()
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM users")
+        users = c.fetchall()
+        c.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 50")
+        logs = c.fetchall()
+    finally:
+        if conn:
+            conn.close()
     log_action(session.get('username'), 'ADMIN_ACCESS')
     return render_template('admin.html', users=users, logs=logs)
 
@@ -199,11 +208,15 @@ def dashboard():
 @app.route('/api/users')
 def api_users():
     # Vulnerable: No auth check, exposes user data
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    c.execute("SELECT id, username, role FROM users")
-    users = c.fetchall()
-    conn.close()
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT id, username, role FROM users")
+        users = c.fetchall()
+    finally:
+        if conn:
+            conn.close()
     return jsonify([{'id': u[0], 'username': u[1], 'role': u[2]} for u in users])
 
 @app.route('/api/fetch')
@@ -220,11 +233,15 @@ def api_fetch():
 
 @app.route('/api/logs')
 def api_logs():
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 100")
-    logs = c.fetchall()
-    conn.close()
+    conn = None
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM logs ORDER BY id DESC LIMIT 100")
+        logs = c.fetchall()
+    finally:
+        if conn:
+            conn.close()
     return jsonify([{'timestamp': l[1], 'user': l[2], 'action': l[3], 'ip': l[4], 'details': l[5]} for l in logs])
 
 if __name__ == '__main__':
